@@ -24,22 +24,11 @@ def histogram_expansion(img, r1: int, r2: int):
     return new
 
 
-#def histogram_compression(img, r1: int, r2: int):
-#    width, height = img.shape
-#    new = np.zeros((width, height), dtype="uint8")
-#    for i in range(width):
-#        for j in range(height):
-#            new_value = r1 + ((r2 - r1) * (img[i, j] / 255))
-#            new_value = max(0, min(new_value, 255))
-#            new[i, j] = new_value
-#    return new
-
-
 def plot_histogram(img, title: str = ""):
-    y, x = img.shape
+    width, height = img.shape
     histogram = [0] * 256
-    for i in range(y):
-        for j in range(x):
+    for i in range(width):
+        for j in range(height):
             pixel = int(max(0, min(img[i, j], 255)))
             if histogram[pixel] < 10000:
                 histogram[pixel] += 1
