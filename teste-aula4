@@ -31,3 +31,31 @@ cv2.imshow('Imagem Original', image)
 cv2.imshow('Imagem com Expansão de Histograma', expanded_image)
 cv2.waitKey(0)
 cv2.destroyAllWindows()
+
+
+##histograma
+
+def plot_histogram(image):
+    # Converte a imagem para tons de cinza, se necessário
+    if len(image.shape) == 3:
+        gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    else:
+        gray_image = image
+
+    # Calcula o histograma da imagem em tons de cinza
+    hist = cv2.calcHist([gray_image], [0], None, [256], [0, 256])
+
+    # Plota o histograma
+    plt.figure()
+    plt.title('Histograma da Imagem')
+    plt.xlabel('Intensidade de Pixel')
+    plt.ylabel('Número de Pixels')
+    plt.plot(hist)
+    plt.xlim([0, 256])
+    plt.show()
+
+# Carrega a imagem
+image = cv2.imread('imagem.jpg')
+
+# Plota o histograma da imagem
+plot_histogram(image)
