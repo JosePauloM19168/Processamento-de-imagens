@@ -1,0 +1,33 @@
+import cv2
+import numpy as np
+
+def histogram_expansion(image):
+    # Converte a imagem para tons de cinza, se necessário
+    if len(image.shape) == 3:
+        gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    else:
+        gray_image = image
+
+    # Calcula o histograma da imagem em tons de cinza
+    hist = cv2.calcHist([gray_image], [0], None, [256], [0, 256])
+
+    # Encontra os valores mínimo e máximo de intensidade do histograma
+    min_intensity = np.min(np.where(hist > 0))
+    max_intensity = np.max(np.where(hist > 0))
+
+    # Realiza a expansão de histograma
+    expanded_image = ((gray_image - min_intensity) / (max_intensity - min_intensity) * 255).astype(np.uint8)
+
+    return expanded_image
+
+# Carrega a imagem
+image = cv2.imread('imagem.jpg')
+
+# Aplica a expansão de histograma
+expanded_image = histogram_expansion(image)
+
+# Exibe a imagem original e a imagem com expansão de histograma
+cv2.imshow('Imagem Original', image)
+cv2.imshow('Imagem com Expansão de Histograma', expanded_image)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
