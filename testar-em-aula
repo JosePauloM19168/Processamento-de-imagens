@@ -1,0 +1,68 @@
+import cv2
+import numpy as np
+
+# Carregar a imagem em escala de cinza
+image = cv2.imread('sua_imagem.jpg', cv2.IMREAD_GRAYSCALE)
+
+# Encontrar os valores mínimo e máximo de intensidade na imagem
+min_intensity = np.min(image)
+max_intensity = np.max(image)
+
+# Definir os novos valores mínimo e máximo desejados após a expansão
+new_min = 0
+new_max = 255
+
+# Aplicar a expansão de histograma usando uma transformação linear
+expanded_image = ((image - min_intensity) / (max_intensity - min_intensity)) * (new_max - new_min) + new_min
+
+# Converter a imagem resultante para o tipo de dados uint8
+expanded_image = expanded_image.astype(np.uint8)
+
+# Mostrar a imagem de entrada e a imagem com expansão de histograma
+cv2.imshow('Imagem de Entrada', image)
+cv2.imshow('Imagem com Expansão de Histograma', expanded_image)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
+
+##histograma
+
+
+import cv2
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Carregar a imagem em escala de cinza
+image = cv2.imread('sua_imagem.jpg', cv2.IMREAD_GRAYSCALE)
+
+# Encontrar os valores mínimo e máximo de intensidade na imagem
+min_intensity = np.min(image)
+max_intensity = np.max(image)
+
+# Definir os novos valores mínimo e máximo desejados após a expansão
+new_min = 0
+new_max = 255
+
+# Aplicar a expansão de histograma usando uma transformação linear
+expanded_image = ((image - min_intensity) / (max_intensity - min_intensity)) * (new_max - new_min) + new_min
+
+# Converter a imagem resultante para o tipo de dados uint8
+expanded_image = expanded_image.astype(np.uint8)
+
+# Calcular o histograma da imagem expandida
+histogram = cv2.calcHist([expanded_image], [0], None, [256], [0, 256])
+
+# Plotar o histograma
+plt.figure(figsize=(8, 6))
+plt.title('Histograma Expandido')
+plt.xlabel('Intensidade de Pixel')
+plt.ylabel('Frequência')
+plt.xlim([0, 256])
+plt.plot(histogram)
+plt.grid(True)
+plt.show()
+
+# Mostrar a imagem de entrada e a imagem com expansão de histograma
+cv2.imshow('Imagem de Entrada', image)
+cv2.imshow('Imagem com Expansão de Histograma', expanded_image)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
