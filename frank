@@ -1,0 +1,30 @@
+def histogram_expansion(img, r1: int, r2: int):
+    width, height = img.shape
+    new = np.zeros((width, height), dtype="uint8")
+    for i in range(width):
+        for j in range(height):
+            new_value = 255 * ((img[i, j] - r1) / (r2 - r1))
+            new_value = max(0, min(new_value, 255))
+            new[i, j] = new_value
+    return new
+
+
+for i in range(imagem.shape[0]):
+    for j in range(imagem.shape[1]):
+        if canalPretoBranco[i][j]>255:
+            canalPretoBranco[i][j] = 255
+        if canalPretoBranco[i][j]< 0:
+            canalPretoBranco[i][j] = 0
+        imagemDestino[i][j] = c*canalPretoBranco[i][j] + l
+ 
+cv2.imshow("ImagemBrilhoConstraste", imagemDestino)        
+cv2.imwrite("ImagemBrilhoConstraste.jpg", imagemDestino)
+
+# Encontra os valores mínimo e máximo de intensidade do histograma
+    min_intensity = np.min(np.where(hist > 0))
+    max_intensity = np.max(np.where(hist > 0))
+
+    # Realiza a expansão de histograma
+    expanded_image = ((gray_image - min_intensity) / (max_intensity - min_intensity) * 255).astype(np.uint8)
+
+    return expanded_image
