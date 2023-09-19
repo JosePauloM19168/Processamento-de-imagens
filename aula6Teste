@@ -1,49 +1,180 @@
+#Aula 5#
+
 import cv2
-import numpy as np
+import numpy
 import matplotlib.pyplot as plt
+import random
 
-# Carregar a imagem de entrada e a imagem de referência
-input_img = cv2.imread('input.jpg', cv2.IMREAD_GRAYSCALE)
-reference_img = cv2.imread('reference.jpg', cv2.IMREAD_GRAYSCALE)
+input= "pranta.jpg"
+pranta = cv2.imread(input)
 
-# Calcular os histogramas das duas imagens
-hist_input = cv2.calcHist([input_img], [0], None, [256], [0, 256])
-hist_reference = cv2.calcHist([reference_img], [0], None, [256], [0, 256])
+pranta_BP =  numpy.zeros((pranta.shape[0], pranta.shape[1]), dtype = numpy.uint8)
+pranta_equalizada = numpy.zeros((pranta.shape[0], pranta.shape[1]), dtype = numpy.uint8)
+pranta_modificada = numpy.zeros((pranta.shape[0],pranta.shape[1]),dtype= numpy.uint8)
+histprantaBP = [0]*256
+histprantaBP_normal= [0]*256
+histprantaBP_acumulado=[0]*256
 
-# Normalizar os histogramas
-hist_input /= hist_input.sum()
-hist_reference /= hist_reference.sum()
+for i in range(pranta.shape[0]):
+    for j in range(pranta.shape[1]):
+        pranta_BP[i][j] = (pranta[i][j].sum()//3)
+        histprantaBP[pranta_BP[i][j]]+=1
+  
 
-# Calcular a função de transformação
-cumulative_input = np.cumsum(hist_input)
-cumulative_reference = np.cumsum(hist_reference)
+cv2.imshow ('Pranta PB',pranta_BP)
+cv2.imwrite("Pranta preto e branco.jpg",pranta_BP)
 
-transform_map = np.interp(cumulative_input, cumulative_reference, np.arange(256))
 
-# Aplicar a transformação ao pixel da imagem de entrada
-output_img = transform_map[input_img]
+#Histograma Alce BP
 
-# Converter os resultados de volta para o tipo uint8
-output_img = np.uint8(output_img)
+pixel1 = [0]*256
+for i in range(256):
+    pixel1[i] = i
 
-# Exibir as imagens
-plt.figure(figsize=(12, 6))
-plt.subplot(2, 2, 1)
-plt.imshow(input_img, cmap='gray')
-plt.title('Imagem de Entrada')
+#Título do gráfico
+plt.xlabel('Pixel')
+plt.ylabel('Quantidade') 
+plt.title('Histograma da Pranta Preto e Branco')
+plt.bar(pixel1, histprantaBP, color='grey');    
 
-plt.subplot(2, 2, 2)
-plt.imshow(reference_img, cmap='gray')
-plt.title('Imagem de Referência')
+#Calculo Histograma Normalizado
+numero_pixel = pranta.shape[1]*pranta.shape[0]
 
-plt.subplot(2, 2, 3)
-plt.imshow(output_img, cmap='gray')
-plt.title('Imagem Especificada')
+for i in range (256):
+    histprantaBP_normal[i]=histprantaBP[i]/numero_pixel    
 
-plt.subplot(2, 2, 4)
-plt.plot(hist_input, color='blue', label='Histograma de Entrada')
-plt.plot(hist_reference, color='red', label='Histograma de Referência')
-plt.legend()
-plt.title('Histogramas')
+#Histograma Alce normalizado BP
 
-plt.show()
+pixel2 = [0]*256
+for i in range(256):
+    pixel2[i] = i
+
+#Título do gráfico
+plt.xlabel('Pixel')
+plt.ylabel('Quantidade') 
+plt.title('Histograma da Pranta Preto e Branco Normalizado')
+plt.bar(pixel2, histprantaBP_normal, color='grey');
+
+#Calculo do Histograma Normalizado Acumulado
+for i in range(256):
+    if (histprantaBP_acumulado[i]==0) :
+        histprantaBP_acumulado[i]=histprantaBP_normal[i]   
+    else:
+        histprantaBP_acumulado[i]=histprantaBP_acumulado[i-1]+histprantaBP_normal[i]
+
+ 
+#Histograma normalizado acumulado BP
+
+pixel3 = [0]*256
+for i in range(256):
+     pixel3[i] = i
+
+ #Título do gráfico
+plt.xlabel('Pixel')
+plt.ylabel('Quantidade') 
+plt.title('Histograma da Pranta Preto e Branco Normalizado Acumulado')
+plt.bar(pixel3, histprantaBP_acumulado, color='blue');   
+
+#Histograma Equalizado
+histprantaBP_mapeado = [0]*256
+for i in range(256):
+    histprantaBP_mapeado[i]=round(histprantaBP_acumulado[i]*255)
+
+pixel4 = [0]*256
+for i in range(256):
+     pixel4[i] = i
+
+ #Título do gráfico
+plt.xlabel('Pixel')
+plt.ylabel('Quantidade') 
+plt.title('Histograma da Pranta Preto e Branco Mapeado')
+plt.bar(pixel4, histprantaBP_mapeado, color='blue');   
+
+#Imagem Equalizada com o seu Histograma
+histprantaBP_equalizado=[0]*256
+for i in range (pranta.shape[0]):
+    for j in range (pranta.shape[1]):
+        pranta_equalizada[i][j] = histprantaBP_mapeado[pranta_BP[i][j]]
+        histprantaBP_equalizado[pranta_equalizada[i][j]]+=1
+ 
+
+cv2.imshow('Pranta Equalizada',pranta_equalizada)
+cv2.imwrite("Pranta Equalizada.jpg", pranta_equalizada)
+
+
+pixel5 =[0]*256
+for i in range (256):
+    pixel5[i]=i
+    
+plt.xlabel('Pixel')
+plt.ylabel('Quantidade')
+plt.title('Histograma da Pranta Equalizado')    
+plt.bar(pixel5,histprantaBP_equalizado, color='red')      
+
+
+#Aula 6
+
+#Criar um Histograma do 0 para ser normalizado      
+somatorio=0
+histograma_fake= [0]*256
+print(random.random())
+for i in range(256):
+    histograma_fake[i]=(i*3000)/(2*10)
+    somatorio=histograma_fake[i]+somatorio
+
+pixel1 = [0]*256
+for i in range(256):
+    pixel1[i] = i
+
+  #Título do gráfico
+plt.xlabel('Pixel')
+plt.ylabel('Quantidade') 
+plt.title('Histograma Fake')
+plt.bar(pixel1, histograma_fake, color='blue');
+
+histogramafake_normal=[0]*256
+for i in range (256):
+    histogramafake_normal[i]=histograma_fake[i]/somatorio      
+
+#Título do gráfico
+plt.xlabel('Pixel')
+plt.ylabel('Quantidade') 
+plt.title('Histograma Fake_normal')
+plt.bar(pixel1, histogramafake_normal, color='red');   
+
+histogramafake_acumulado=[0]*256
+
+for i in range(256):
+   if (histogramafake_acumulado[i]==1) :
+       histogramafake_acumulado[i]=histogramafake_normal[i]   
+   else:
+       histogramafake_acumulado[i]=histogramafake_acumulado[i-1]+histogramafake_normal[i]
+#Título do gráfico
+plt.xlabel('Pixel')
+plt.ylabel('Quantidade') 
+plt.title('Histograma Fake_normal Acumulado')
+plt.bar(pixel1, histogramafake_acumulado, color='green');   
+
+histogramafake_mapeado=[0]*256
+for i in range(256):
+    histogramafake_mapeado[i]=round(histogramafake_acumulado[i]*255)
+    
+
+histogramafake_modificado=[0]*256
+for i in range(256):
+    histogramafake_modificado[i]=histprantaBP_mapeado[i]
+
+histogramafake_modificado2=[0]*256
+
+for i in range (pranta.shape[0]):
+    for j in range (pranta.shape[1]):
+        pranta_modificada[i][j] = histogramafake_modificado[pranta_equalizada[i][j]]
+        histogramafake_modificado2[pranta_modificada[i][j]]+=1
+
+plt.xlabel('Pixel')
+plt.ylabel('Quantidade') 
+plt.title('Histograma Fake_normal Modificado')
+plt.bar(pixel1, histogramafake_modificado2, color='yellow');         
+cv2.imshow('Imagem Equalizada Modificada por valores aleatorios',pranta_modificada)
+cv2.imwrite("Imagem Equalizada Modificada.jpg",pranta_modificada)
+cv2.waitKey(0)
