@@ -1,0 +1,49 @@
+import cv2
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Carregar a imagem de entrada e a imagem de referência
+input_img = cv2.imread('input.jpg', cv2.IMREAD_GRAYSCALE)
+reference_img = cv2.imread('reference.jpg', cv2.IMREAD_GRAYSCALE)
+
+# Calcular os histogramas das duas imagens
+hist_input = cv2.calcHist([input_img], [0], None, [256], [0, 256])
+hist_reference = cv2.calcHist([reference_img], [0], None, [256], [0, 256])
+
+# Normalizar os histogramas
+hist_input /= hist_input.sum()
+hist_reference /= hist_reference.sum()
+
+# Calcular a função de transformação
+cumulative_input = np.cumsum(hist_input)
+cumulative_reference = np.cumsum(hist_reference)
+
+transform_map = np.interp(cumulative_input, cumulative_reference, np.arange(256))
+
+# Aplicar a transformação ao pixel da imagem de entrada
+output_img = transform_map[input_img]
+
+# Converter os resultados de volta para o tipo uint8
+output_img = np.uint8(output_img)
+
+# Exibir as imagens
+plt.figure(figsize=(12, 6))
+plt.subplot(2, 2, 1)
+plt.imshow(input_img, cmap='gray')
+plt.title('Imagem de Entrada')
+
+plt.subplot(2, 2, 2)
+plt.imshow(reference_img, cmap='gray')
+plt.title('Imagem de Referência')
+
+plt.subplot(2, 2, 3)
+plt.imshow(output_img, cmap='gray')
+plt.title('Imagem Especificada')
+
+plt.subplot(2, 2, 4)
+plt.plot(hist_input, color='blue', label='Histograma de Entrada')
+plt.plot(hist_reference, color='red', label='Histograma de Referência')
+plt.legend()
+plt.title('Histogramas')
+
+plt.show()
