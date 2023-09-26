@@ -1,0 +1,136 @@
+import cv2
+import numpy
+import matplotlib.pyplot as plt
+
+foto = 'pratica_processamento_imagens.jpg'
+foto_1 = 'neve.jpg'
+foto_2 = 'bxcontraste.jpg'
+imagem =  cv2.imread(foto_1)
+
+#-------------------------------------AULA 6 --------------------------------
+#     Especificação direta de histogramas
+
+soma=0
+hist = [0]*256
+i=0    
+for i in range (256):
+    hist[i]= -1* (1000 - 1000*((1/2)*i))
+    soma+=hist[i]
+    i=+1
+
+hist_normalizado = [0]*256
+i=0    
+for i in range (256):
+    hist_normalizado[i]= hist[i]/(soma)
+    
+    i=+1
+
+pixel = 256*[0]
+for i in range (256):
+    pixel[i]=i     
+ 
+# plt.xlabel("Pixel")
+# plt.ylabel ("Quantidade") 
+# plt.title("Histograma Especificado Normalizado") 
+# plt.bar(pixel, hist_normalizado, color="gray")
+# plt.show
+
+hist_n_Acumulado=256*[0]
+hist_n_Acumulado[0] = hist_normalizado[i]
+i=1
+for i in range (256):
+    hist_n_Acumulado [i] = hist_n_Acumulado [i-1] + hist_normalizado[i]
+
+# plt.xlabel("Pixel")
+# plt.ylabel ("Quantidade") 
+# plt.title("Histograma Especificado Normalizado Acumulado") 
+# plt.bar(pixel, hist_n_Acumulado, color="red")
+# plt.show
+
+hist_n_A_Map=256*[0]
+i=0
+for i in range (256):
+    hist_n_A_Map[i]= round(hist_n_Acumulado[i] * 255)
+    
+    
+# plt.xlabel("Pixel")
+# plt.ylabel ("Quantidade") 
+# plt.title("Histograma Mapeamento") 
+# plt.bar(pixel, hist_n_Acumulado, color="blue")
+# plt.show
+
+canal_Cinza = numpy.zeros((imagem.shape[0], imagem.shape[1]), dtype = numpy.uint8 )
+for i in range (imagem.shape[0]):
+    for j in range (imagem.shape[1]):
+        canal_Cinza[i][j] = (imagem[i][j].sum()//3)
+cv2.imwrite("saida_1.jpg", canal_Cinza)
+     
+hist_img = [0]*256
+for i in range (imagem.shape[0]): 
+    for j in range (imagem.shape[1]):
+        hist_img[canal_Cinza[i][j]] += 1
+        
+hist_normalizado_img = [0]*256
+i=0    
+for i in range (256):
+    hist_normalizado_img[i]= hist_img[i]/(imagem.shape[0]*imagem.shape[1])
+    i=+1  
+ 
+hist_n_Acumulado_img=256*[0]
+hist_n_Acumulado_img[0] = hist_normalizado_img[i]
+
+i=1
+for i in range (256):
+    hist_n_Acumulado_img [i] = hist_n_Acumulado_img [i-1] + hist_normalizado_img[i]
+    
+hist_n_A_Map_img=256*[0]
+i=0
+for i in range (256):
+    hist_n_A_Map_img[i]= round(hist_n_Acumulado_img[i] * 255)
+
+
+#--------------------------------------AULA 7--------------------------------------------
+#CONTINUANDO A AULA PASSADA
+
+def remove_repetido(lista):
+    l=[]
+    for valor in lista:
+        if valor not in l:
+            l.append(valor)
+    return l
+
+def mapeamento (sem_repeticao, acumulado_ficticio):
+    mapa_2={}
+    for valor in sem_repeticao:
+        menor=abs (valor-acumulado_ficticio[0])
+        menor_indice=0
+        for j in range (len(acumulado_ficticio)):
+            if (abs(valor-acumulado_ficticio[j])<menor):
+                menor = abs(valor-acumulado_ficticio[j])
+                menor_indice=j
+            mapa_2[valor]=menor_indice
+    return mapa_2
+
+hist_n_A_Map_sem_repeticao = remove_repetido(hist_n_A_Map_img)
+M_Map= mapeamento(hist_n_A_Map_sem_repeticao, hist_n_A_Map )
+
+Imagem_especificado = numpy.zeros((imagem.shape[0], imagem.shape[1]), dtype = numpy.uint8)
+for i in range (imagem.shape[0]):
+    for j in range (imagem.shape[1]):
+            Imagem_especificado[i][j] = M_Map[hist_n_A_Map_img [canal_Cinza[i][j]]]
+cv2.imwrite("Especificada.jpg", Imagem_especificado)
+
+hist_es = [0]*256
+for i in range (imagem.shape[0]):
+    for j in range (imagem.shape[1]):
+        hist_es[Imagem_especificado[i][j]] +=1 
+        
+# pixel = 256*[0]
+# for i in range (256):
+#     pixel[i]=i   
+
+# plt.xlabel("Pixel")
+# plt.ylabel ("Quantidade") 
+# plt.title("Histograma da Imagem Especificado") 
+# plt.bar(pixel, hist_es, color="green")
+# plt.show
